@@ -1,35 +1,44 @@
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { resetPasswordApi } from '@api';
 import { ResetPasswordUI } from '@ui-pages';
 
 export const ResetPassword: FC = () => {
   const navigate = useNavigate();
+
+  // Состояние для хранения пароля, токена и ошибки
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  // Функция для проверки флага сброса пароля в localStorage
+  const isResetPasswordAllowed = () =>
+    localStorage.getItem('resetPassword') !== null;
+
+  // Обработка отправки формы
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    setError(null);
-    resetPasswordApi({ password, token })
-      .then(() => {
-        localStorage.removeItem('resetPassword');
-        navigate('/login');
-      })
-      .catch((err) => setError(err));
+    setError(undefined); // Сбрасываем ошибку перед отправкой
+
+    try {
+      await resetPasswordApi({ password, token });
+      localStorage.removeItem('resetPassword');
+      navigate('/login');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+    }
   };
 
+  // Проверяем, можно ли сбросить пароль, и перенаправляем на другую страницу, если нет
   useEffect(() => {
-    if (!localStorage.getItem('resetPassword')) {
+    if (!isResetPasswordAllowed()) {
       navigate('/forgot-password', { replace: true });
     }
   }, [navigate]);
 
   return (
     <ResetPasswordUI
-      errorText={error?.message}
+      errorText={error}
       password={password}
       token={token}
       setPassword={setPassword}
