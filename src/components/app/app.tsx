@@ -19,13 +19,25 @@ import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 
+/**
+ * Главный компонент приложения.
+ * Управляет маршрутизацией и загрузкой данных при старте приложения.
+ */
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // Получаем предыдущее местоположение для отображения модальных окон на фоне
   const background = location.state && location.state.background;
+
+  // Функция для закрытия модального окна
   const CloseModal = () => navigate(-1);
 
+  /**
+   * useEffect для загрузки данных ингредиентов и пользователя при монтировании приложения.
+   * Вызывает асинхронные действия fetchIngredients и fetchUser.
+   */
   useEffect(() => {
     dispatch(fetchIngredients());
     dispatch(fetchUser());

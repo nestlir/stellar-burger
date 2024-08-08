@@ -8,7 +8,12 @@ import { Preloader } from '../../components/ui';
 import { FC } from 'react';
 import { ingredientsSelectors } from '../../services/slices/ingredientsSlice';
 
+/**
+ * Компонент страницы конструктора бургера.
+ * Включает отображение ингредиентов и конструктора бургера.
+ */
 export const ConstructorPage: FC = () => {
+  // Получаем состояние загрузки ингредиентов из Redux с помощью селектора
   const isIngredientsLoading = useSelector(
     ingredientsSelectors.isLoadingSelector
   );
@@ -16,8 +21,10 @@ export const ConstructorPage: FC = () => {
   return (
     <>
       {isIngredientsLoading ? (
+        // Если ингредиенты еще загружаются, отображаем прелоадер
         <Preloader />
       ) : (
+        // Если ингредиенты загружены, отображаем основное содержимое страницы
         <main className={styles.containerMain}>
           <h1
             className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}

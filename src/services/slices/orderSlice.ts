@@ -19,7 +19,12 @@ const initialState: TOrdersState = {
   error: null
 };
 
-// Асинхронное действие для создания заказа
+/**
+ * Асинхронное действие для создания заказа.
+ *
+ * @param data - Массив идентификаторов продуктов для заказа.
+ * @returns Данные заказа, полученные от API.
+ */
 export const fetchOrderBurger = createAsyncThunk<
   TOrder,
   string[],
@@ -33,7 +38,12 @@ export const fetchOrderBurger = createAsyncThunk<
   }
 });
 
-// Асинхронное действие для получения заказа по номеру
+/**
+ * Асинхронное действие для получения заказа по его номеру.
+ *
+ * @param number - Номер заказа.
+ * @returns Заказ, полученный по указанному номеру.
+ */
 export const fetchOrderByNumber = createAsyncThunk<
   TOrder,
   number,
@@ -47,7 +57,11 @@ export const fetchOrderByNumber = createAsyncThunk<
   }
 });
 
-// Асинхронное действие для получения всех заказов
+/**
+ * Асинхронное действие для получения всех заказов.
+ *
+ * @returns Массив всех заказов, полученных от API.
+ */
 export const fetchOrders = createAsyncThunk<
   TOrder[],
   void,
@@ -66,11 +80,20 @@ export const ordersSlice = createSlice({
   name: 'orders',
   initialState,
   reducers: {
-    // Действие для установки данных заказа в модальное окно
+    /**
+     * Действие для установки данных заказа в модальное окно.
+     *
+     * @param state - Текущее состояние слайса.
+     * @param action - Действие с данными заказа.
+     */
     orderModalDataAction: (state, action: PayloadAction<TOrder | null>) => {
       state.order = action.payload;
     },
-    // Действие для очистки данных заказа в модальном окне
+    /**
+     * Действие для очистки данных заказа в модальном окне.
+     *
+     * @param state - Текущее состояние слайса.
+     */
     clearOrderModalDataAction: (state) => {
       state.order = null;
     }
@@ -79,44 +102,44 @@ export const ordersSlice = createSlice({
     builder
       // Обработка асинхронного действия создания заказа
       .addCase(fetchOrderBurger.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
+        state.isLoading = true; // Установка флага загрузки
+        state.error = null; // Сброс сообщения об ошибке
       })
       .addCase(fetchOrderBurger.fulfilled, (state, action) => {
-        state.order = action.payload;
-        state.isLoading = false;
+        state.order = action.payload; // Установка данных заказа
+        state.isLoading = false; // Сброс флага загрузки
       })
       .addCase(fetchOrderBurger.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload || 'Неизвестная ошибка';
+        state.isLoading = false; // Сброс флага загрузки
+        state.error = action.payload || 'Неизвестная ошибка'; // Установка сообщения об ошибке
       })
 
       // Обработка асинхронного действия получения заказа по номеру
       .addCase(fetchOrderByNumber.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
+        state.isLoading = true; // Установка флага загрузки
+        state.error = null; // Сброс сообщения об ошибке
       })
       .addCase(fetchOrderByNumber.fulfilled, (state, action) => {
-        state.order = action.payload;
-        state.isLoading = false;
+        state.order = action.payload; // Установка данных заказа
+        state.isLoading = false; // Сброс флага загрузки
       })
       .addCase(fetchOrderByNumber.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload || 'Неизвестная ошибка';
+        state.isLoading = false; // Сброс флага загрузки
+        state.error = action.payload || 'Неизвестная ошибка'; // Установка сообщения об ошибке
       })
 
       // Обработка асинхронного действия получения всех заказов
       .addCase(fetchOrders.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
+        state.isLoading = true; // Установка флага загрузки
+        state.error = null; // Сброс сообщения об ошибке
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
-        state.orders = action.payload;
-        state.isLoading = false;
+        state.orders = action.payload; // Установка списка заказов
+        state.isLoading = false; // Сброс флага загрузки
       })
       .addCase(fetchOrders.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload || 'Неизвестная ошибка';
+        state.isLoading = false; // Сброс флага загрузки
+        state.error = action.payload || 'Неизвестная ошибка'; // Установка сообщения об ошибке
       });
   }
 });
@@ -126,10 +149,10 @@ export const orderActions = ordersSlice.actions;
 
 // Экспорт селекторов слайса для доступа к данным из хранилища
 export const orderSelectors = {
-  ordersSelector: (state: RootState) => state.orders.orders,
-  orderSelector: (state: RootState) => state.orders.order,
-  isLoadingSelector: (state: RootState) => state.orders.isLoading,
-  errorSelector: (state: RootState) => state.orders.error
+  ordersSelector: (state: RootState) => state.orders.orders, // Селектор для получения списка всех заказов
+  orderSelector: (state: RootState) => state.orders.order, // Селектор для получения текущего заказа
+  isLoadingSelector: (state: RootState) => state.orders.isLoading, // Селектор для проверки состояния загрузки
+  errorSelector: (state: RootState) => state.orders.error // Селектор для получения сообщения об ошибке
 };
 
 export default ordersSlice.reducer;
