@@ -15,16 +15,10 @@ import {
 } from '../../services/slices/orderSlice';
 import { fetchUser, userSelectors } from '../../services/slices/userSlice';
 
-/**
- * Компонент для сборки бургера.
- * Включает логику добавления ингредиентов, оформления заказа и расчета стоимости.
- */
 export const BurgerConstructor: FC = () => {
-  // Hooks
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Selectors
   const user = useSelector(userSelectors.userSelector);
   const bun = useSelector(burgerConstructorSelectors.bunSelector);
   const ingredients = useSelector(
@@ -33,19 +27,19 @@ export const BurgerConstructor: FC = () => {
   const orderRequest = useSelector(orderSelectors.isLoadingSelector);
   const orderModalData = useSelector(orderSelectors.orderSelector);
 
-  // Effects
   useEffect(() => {
     if (!user) {
       dispatch(fetchUser());
     }
+
+    // Очистка идентификатора заказа и данных модального окна
+    localStorage.removeItem('orderId');
+    dispatch(orderActions.clearOrderModalDataAction());
+
+    // Также сбрасываем состояние конструктора
+    dispatch(burgerConstructorActions.clearIngredients());
   }, [dispatch, user]);
 
-  // Handlers
-
-  /**
-   * Обработка клика на кнопку оформления заказа.
-   * Проверяет, есть ли пользователь и выбранные ингредиенты, и отправляет заказ.
-   */
   const onOrderClick = () => {
     if (!bun || orderRequest) return;
 
@@ -60,21 +54,12 @@ export const BurgerConstructor: FC = () => {
     dispatch(fetchOrderBurger(orderData));
   };
 
-  /**
-   * Обработка закрытия модального окна с информацией о заказе.
-   * Очищает данные о заказе и ингредиентах в конструкторе.
-   */
   const closeOrderModal = () => {
     dispatch(orderActions.clearOrderModalDataAction());
     dispatch(burgerConstructorActions.clearIngredients());
+    localStorage.removeItem('orderId');
   };
 
-  // Calculations
-
-  /**
-   * Расчет общей стоимости бургера.
-   * Включает цену булочки (удвоенную) и цену всех выбранных ингредиентов.
-   */
   const calculatePrice = useMemo(() => {
     const bunPrice = bun ? bun.price * 2 : 0;
     const ingredientsPrice = ingredients.reduce(
@@ -85,7 +70,6 @@ export const BurgerConstructor: FC = () => {
     return bunPrice + ingredientsPrice;
   }, [bun, ingredients]);
 
-  // Render
   return (
     <BurgerConstructorUI
       price={calculatePrice}
