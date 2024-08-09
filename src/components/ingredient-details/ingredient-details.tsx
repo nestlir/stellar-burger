@@ -13,6 +13,9 @@ export const IngredientDetails: FC = () => {
   // Получаем список ингредиентов из глобального состояния Redux
   const ingredients = useSelector(ingredientsSelectors.ingredientsSelector);
 
+  // Проверяем, идет ли загрузка ингредиентов
+  const isLoading = useSelector(ingredientsSelectors.isLoadingSelector);
+
   // Получаем ID ингредиента из параметров URL
   const { id } = useParams();
 
@@ -20,8 +23,15 @@ export const IngredientDetails: FC = () => {
   const ingredientData = ingredients.find((i) => i._id === id);
 
   // Если данные ингредиента не найдены, отображаем прелоадер
-  if (!ingredientData) return <Preloader />;
+  if (!ingredientData) {
+    return <Preloader />;
+  }
 
-  // Если данные ингредиента найдены, отображаем их в компоненте UI
+  // Если данные ингредиента найдены, но загрузка еще идет, отображаем прелоадер
+  if (isLoading) {
+    return <Preloader />;
+  }
+
+  // Если данные ингредиента найдены и загрузка завершена, отображаем их в компоненте UI
   return <IngredientDetailsUI ingredientData={ingredientData} />;
 };
