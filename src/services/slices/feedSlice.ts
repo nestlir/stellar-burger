@@ -27,12 +27,8 @@ export const fetchFeed = createAsyncThunk<
   void,
   { rejectValue: string }
 >('feeds/fetchFeed', async (_, { rejectWithValue }) => {
-  try {
-    const response = await getFeedsApi();
-    return response;
-  } catch (error) {
-    return rejectWithValue('Ошибка при получении данных ленты заказов');
-  }
+  const response = await getFeedsApi();
+  return response;
 });
 
 // Создание слайса для управления состоянием ленты заказов
@@ -60,7 +56,7 @@ export const feedSlice = createSlice({
       // Обработка ошибки при получении данных ленты заказов
       .addCase(fetchFeed.rejected, (state, action) => {
         state.isLoading = false; // Сброс состояния загрузки
-        state.error = action.payload || 'Неизвестная ошибка'; // Установка сообщения об ошибке
+        state.error = action.error.message || 'Неизвестная ошибка'; // Установка сообщения об ошибке
       });
   }
 });
