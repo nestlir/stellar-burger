@@ -10,7 +10,7 @@ import {
   ResetPassword
 } from '@pages';
 import '../../index.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './app.module.css';
 import { useDispatch } from '../../services/store';
 import { fetchUser } from '../../services/slices/userSlice';
@@ -28,11 +28,29 @@ const App = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<React.ReactNode>(null);
+
+  // Получаем предыдущее местоположение для отображения модальных окон на фоне
   // Получаем предыдущее местоположение для отображения модальных окон на фоне
   const background = location.state && location.state.background;
 
-  // Функция для закрытия модального окна
-  const CloseModal = () => navigate(-1);
+  /**
+   * Функция для закрытия модального окна
+   */
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalContent(null);
+    navigate(-1);
+  };
+
+  /**
+   * Функция для открытия модального окна с определенным контентом
+   */
+  const openModal = (content: React.ReactNode) => {
+    setModalContent(content);
+    setIsModalOpen(true);
+  };
 
   /**
    * useEffect для загрузки данных ингредиентов и пользователя при монтировании приложения.
@@ -42,6 +60,19 @@ const App = () => {
     dispatch(fetchIngredients());
     dispatch(fetchUser());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (background) {
+      const path = location.pathname.split('/')[1];
+      if (path === 'ingredients') {
+        openModal(<IngredientDetails />);
+      } else if (path === 'feed') {
+        openModal(<OrderInfo />);
+      } else if (path === 'profile') {
+        openModal(<OrderInfo />);
+      }
+    }
+  }, [location, background]);
 
   return (
     <div className={styles.app}>
@@ -115,7 +146,7 @@ const App = () => {
           <Route
             path='/feed/:number'
             element={
-              <Modal title={'Информация о заказе'} onClose={CloseModal}>
+              <Modal title={'Информация о заказе'} onClose={closeModal}>
                 <OrderInfo />
               </Modal>
             }
@@ -123,7 +154,7 @@ const App = () => {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal title={'Детали ингредиента'} onClose={CloseModal}>
+              <Modal title={'Детали ингредиента'} onClose={closeModal}>
                 <IngredientDetails />
               </Modal>
             }
@@ -132,7 +163,7 @@ const App = () => {
             path='/profile/orders/:number'
             element={
               <ProtectedRoute>
-                <Modal title={'Информация о заказе'} onClose={CloseModal}>
+                <Modal title={'Информация о заказе'} onClose={closeModal}>
                   <OrderInfo />
                 </Modal>
               </ProtectedRoute>
