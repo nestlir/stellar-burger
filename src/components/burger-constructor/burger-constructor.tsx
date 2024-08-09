@@ -15,10 +15,15 @@ import {
 } from '../../services/slices/orderSlice';
 import { fetchUser, userSelectors } from '../../services/slices/userSlice';
 
+/**
+ * Компонент для отображения и управления конструктором бургера.
+ * Включает функциональность добавления ингредиентов, оформления заказа и отображения данных о заказе.
+ */
 export const BurgerConstructor: FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Получаем состояние текущего пользователя, булочки, ингредиентов и данных о заказе
   const user = useSelector(userSelectors.userSelector);
   const bun = useSelector(burgerConstructorSelectors.bunSelector);
   const ingredients = useSelector(
@@ -27,6 +32,10 @@ export const BurgerConstructor: FC = () => {
   const orderRequest = useSelector(orderSelectors.isLoadingSelector);
   const orderModalData = useSelector(orderSelectors.orderSelector);
 
+  /**
+   * useEffect для получения данных пользователя при монтировании компонента.
+   * Если заказ был успешно завершен, очищает состояние конструктора и данные модального окна.
+   */
   useEffect(() => {
     if (!user) {
       dispatch(fetchUser());
@@ -42,12 +51,20 @@ export const BurgerConstructor: FC = () => {
     };
   }, [dispatch, user, orderModalData]);
 
+  /**
+   * Функция для закрытия модального окна с информацией о заказе.
+   * Очищает данные о заказе и состояние конструктора.
+   */
   const closeOrderModal = () => {
     dispatch(orderActions.clearOrderModalDataAction());
     dispatch(burgerConstructorActions.clearIngredients());
     localStorage.removeItem('orderId');
   };
 
+  /**
+   * Функция для обработки нажатия кнопки "Оформить заказ".
+   * Проверяет, авторизован ли пользователь, и отправляет данные заказа на сервер.
+   */
   const onOrderClick = () => {
     if (!bun || orderRequest) return;
 
@@ -62,6 +79,10 @@ export const BurgerConstructor: FC = () => {
     dispatch(fetchOrderBurger(orderData));
   };
 
+  /**
+   * useMemo для вычисления общей стоимости бургера.
+   * Включает стоимость булочки (удвоенную) и всех добавленных ингредиентов.
+   */
   const calculatePrice = useMemo(() => {
     const bunPrice = bun ? bun.price * 2 : 0;
     const ingredientsPrice = ingredients.reduce(
