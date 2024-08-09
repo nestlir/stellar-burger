@@ -12,17 +12,13 @@ import {
 import '../../index.css';
 import { useEffect, useState } from 'react';
 import styles from './app.module.css';
-import { useDispatch } from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
 import { fetchUser } from '../../services/slices/userSlice';
 import { ProtectedRoute } from '../protected-route/protected-route';
 import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 
-/**
- * Главный компонент приложения.
- * Управляет маршрутизацией и загрузкой данных при старте приложения.
- */
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -31,48 +27,40 @@ const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<React.ReactNode>(null);
 
-  // Получаем предыдущее местоположение для отображения модальных окон на фоне
-  // Получаем предыдущее местоположение для отображения модальных окон на фоне
   const background = location.state && location.state.background;
 
-  /**
-   * Функция для закрытия модального окна
-   */
+  // Проверка состояния конструктора
+  const bun = useSelector((state) => state.burgerConstructor.bun);
+  const ingredients = useSelector(
+    (state) => state.burgerConstructor.ingredients
+  );
+  const isConstructorAssembled = bun !== null && ingredients.length > 0;
+
   const closeModal = () => {
     setIsModalOpen(false);
     setModalContent(null);
     navigate(-1);
   };
 
-  /**
-   * Функция для открытия модального окна с определенным контентом
-   */
   const openModal = (content: React.ReactNode) => {
     setModalContent(content);
     setIsModalOpen(true);
   };
 
-  /**
-   * useEffect для загрузки данных ингредиентов и пользователя при монтировании приложения.
-   * Вызывает асинхронные действия fetchIngredients и fetchUser.
-   */
   useEffect(() => {
     dispatch(fetchIngredients());
     dispatch(fetchUser());
   }, [dispatch]);
 
   useEffect(() => {
-    if (background) {
+    if (!background) {
+      // Если страница открыта напрямую и конструктор не собран, перенаправляем на 404
       const path = location.pathname.split('/')[1];
-      if (path === 'ingredients') {
-        openModal(<IngredientDetails />);
-      } else if (path === 'feed') {
-        openModal(<OrderInfo />);
-      } else if (path === 'profile') {
-        openModal(<OrderInfo />);
+      if (path === 'ingredients' && !isConstructorAssembled) {
+        navigate('/not-found');
       }
     }
-  }, [location, background]);
+  }, [background, location, isConstructorAssembled, navigate]);
 
   return (
     <div className={styles.app}>
@@ -80,38 +68,10 @@ const App = () => {
       <Routes location={background || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
-        <Route
-          path='/register'
-          element={
-            <ProtectedRoute onlyUnAuth>
-              <Register />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/login'
-          element={
-            <ProtectedRoute onlyUnAuth>
-              <Login />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/forgot-password'
-          element={
-            <ProtectedRoute onlyUnAuth>
-              <ForgotPassword />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/reset-password'
-          element={
-            <ProtectedRoute onlyUnAuth>
-              <ResetPassword />
-            </ProtectedRoute>
-          }
-        />
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
         <Route
           path='/profile'
           element={
@@ -125,16 +85,6 @@ const App = () => {
           element={
             <ProtectedRoute>
               <ProfileOrders />
-            </ProtectedRoute>
-          }
-        />
-        <Route path='/ingredients/:id' element={<IngredientDetails />} />
-        <Route path='/feed/:number' element={<OrderInfo />} />
-        <Route
-          path='/profile/orders/:number'
-          element={
-            <ProtectedRoute>
-              <OrderInfo />
             </ProtectedRoute>
           }
         />
