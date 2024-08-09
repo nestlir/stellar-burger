@@ -12,6 +12,7 @@ export const Login: FC = () => {
   // Локальное состояние для хранения значений полей email и пароля
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -22,19 +23,25 @@ export const Login: FC = () => {
    *
    * @param {SyntheticEvent} e - Событие отправки формы.
    */
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    setError(null); // Сбрасываем предыдущие ошибки
 
     // Отправляем данные для входа пользователя
-    dispatch(fetchLoginUser({ email, password }));
+    const resultAction = await dispatch(fetchLoginUser({ email, password }));
 
-    // Перенаправляем пользователя на главную страницу после успешного входа
-    navigate('/');
+    // Проверяем успешность запроса
+    if (fetchLoginUser.fulfilled.match(resultAction)) {
+      navigate('/'); // Перенаправляем пользователя на главную страницу после успешного входа
+    } else {
+      // Обработка ошибки авторизации
+      setError('Ошибка при авторизации. Проверьте введенные данные.');
+    }
   };
 
   return (
     <LoginUI
-      errorText='' // Текст ошибки для отображения в UI (пока пусто)
+      errorText='' // Текст ошибки для отображения в UI
       email={email} // Текущее значение email
       setEmail={setEmail} // Функция для обновления состояния email
       password={password} // Текущее значение пароля
@@ -43,3 +50,5 @@ export const Login: FC = () => {
     />
   );
 };
+
+export default Login;
