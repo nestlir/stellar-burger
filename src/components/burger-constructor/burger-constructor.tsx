@@ -32,13 +32,21 @@ export const BurgerConstructor: FC = () => {
       dispatch(fetchUser());
     }
 
-    // Очистка идентификатора заказа и данных модального окна
-    localStorage.removeItem('orderId');
-    dispatch(orderActions.clearOrderModalDataAction());
+    // Очистка состояния конструктора и данных модального окна при успешном завершении заказа
+    return () => {
+      if (orderModalData) {
+        localStorage.removeItem('orderId');
+        dispatch(orderActions.clearOrderModalDataAction());
+        dispatch(burgerConstructorActions.clearIngredients());
+      }
+    };
+  }, [dispatch, user, orderModalData]);
 
-    // Также сбрасываем состояние конструктора
+  const closeOrderModal = () => {
+    dispatch(orderActions.clearOrderModalDataAction());
     dispatch(burgerConstructorActions.clearIngredients());
-  }, [dispatch, user]);
+    localStorage.removeItem('orderId');
+  };
 
   const onOrderClick = () => {
     if (!bun || orderRequest) return;
@@ -52,12 +60,6 @@ export const BurgerConstructor: FC = () => {
     const orderData = [bunId, ...ingredientsIds, bunId];
 
     dispatch(fetchOrderBurger(orderData));
-  };
-
-  const closeOrderModal = () => {
-    dispatch(orderActions.clearOrderModalDataAction());
-    dispatch(burgerConstructorActions.clearIngredients());
-    localStorage.removeItem('orderId');
   };
 
   const calculatePrice = useMemo(() => {
