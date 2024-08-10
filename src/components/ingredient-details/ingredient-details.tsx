@@ -18,8 +18,16 @@ export const IngredientDetails: FC = () => {
 
   const ingredientData = ingredients.find((i) => i._id === id);
 
-  if (!ingredientData || isLoading) {
+  if (isLoading) {
     return <Preloader />;
+  }
+
+  if (!ingredientData) {
+    return (
+      <div className={styles.error}>
+        <h2>Ингредиент не найден</h2>
+      </div>
+    );
   }
 
   // Проверка на наличие background, что указывает на использование модального окна
@@ -28,6 +36,10 @@ export const IngredientDetails: FC = () => {
   return (
     <div className={isModal ? '' : styles.container}>
       <div className={isModal ? '' : styles.content}>
+        {/* Заголовок отображается только если это не модальное окно */}
+        {!isModal && (
+          <h3 className='text text_type_main-large'>Детали ингредиента</h3>
+        )}
         <IngredientDetailsUI ingredientData={ingredientData} />
       </div>
     </div>
