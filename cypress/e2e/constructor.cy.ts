@@ -1,7 +1,8 @@
 describe('Тесты на конструктор', () => {
   beforeEach('перехват запроса на эндпоинт', () => {
     cy.intercept('GET', 'api/ingredients', { fixture: 'ingredients.json' });
-    cy.visit('');
+    // При условии, что приложение запущено
+    cy.visit('http://localhost:4000');
   });
 
   it('Добавление ингредиентов, авторизация и оформление заказа', () => {

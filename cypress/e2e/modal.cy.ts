@@ -4,6 +4,7 @@ describe('Кастомные команды', () => {
     cy.intercept('GET', '**/643d69a5c3f7b9001cfa093c').as(
       'fetchIngredientDetails'
     );
+    // При условии, что приложение запущено
     cy.visit('http://localhost:4000');
 
     // Открываем детали ингридиента
@@ -22,6 +23,7 @@ it('should open the order details modal and close it', () => {
   cy.intercept('GET', '**/643d69a5c3f7b9001cfa0941').as(
     'fetchIngredientDetails'
   );
+  // При условии, что приложение запущено
   cy.visit('http://localhost:4000');
 
   // Открываем детали ингридиента

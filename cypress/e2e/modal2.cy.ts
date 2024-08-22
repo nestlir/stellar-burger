@@ -1,7 +1,8 @@
 describe('Тесты на модальные окна с использованием cy.contains, закрытик по крестику и оверлей', () => {
   beforeEach(() => {
     cy.intercept('GET', 'api/ingredients', { fixture: 'ingredients.json' });
-    cy.visit('/');
+    // При условии, что приложение запущено
+    cy.visit('http://localhost:4000');
   });
 
   it('Открытие и закрытие модального окна через contains', () => {
