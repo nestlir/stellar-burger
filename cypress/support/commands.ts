@@ -1,4 +1,18 @@
 /// <reference types="cypress" />
+
+Cypress.Commands.add(
+  'drag',
+  { prevSubject: 'element' },
+  (subject, targetEl) => {
+    cy.wrap(subject).trigger('mousedown', { which: 1 });
+    cy.get(targetEl).trigger('mousemove').trigger('mouseup', { force: true });
+  }
+);
+
+Cypress.Commands.add('openOrderDetails', () => {
+  cy.get(':nth-child(2) > :nth-child(1) > .J2V21wcp5ddf6wQCcqXv > img').click();
+});
+
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
