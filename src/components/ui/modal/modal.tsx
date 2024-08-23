@@ -1,7 +1,5 @@
 import { FC, memo } from 'react';
-
 import styles from './modal.module.css';
-
 import { CloseIcon } from '@zlden/react-developer-burger-ui-components';
 import { TModalUIProps } from './type';
 import { ModalOverlayUI } from '@ui';
@@ -18,8 +16,9 @@ export const ModalUI: FC<TModalUIProps> = memo(
             className={styles.button}
             type='button'
             data-test-id='modal-close'
+            onClick={onClose} // Переносим onClick на кнопку и типизируем его
           >
-            <CloseIcon type='primary' onClick={onClose} />
+            <CloseIcon type='primary' />
           </button>
         </div>
         <div className={styles.content}>{children}</div>
