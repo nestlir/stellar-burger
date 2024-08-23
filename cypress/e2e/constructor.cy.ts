@@ -36,5 +36,15 @@ describe('Тесты на конструктор', () => {
     // После успешной авторизации снова нажимаем на кнопку "Оформить заказ"
     cy.url().should('not.include', '/login'); // Убедитесь, что авторизация прошла успешно
     cy.get('button.button_type_primary.button_size_large').click();
+
+    // Проверка успешного оформления заказа с увеличенным таймаутом
+    cy.get('.kymTVSFEObODAY4TavAl', { timeout: 30000 }).should('be.visible');
+    cy
+      .get('.kymTVSFEObODAY4TavAl', { timeout: 30000 })
+      .should('contain', 'Ваш заказ начали готовить'),
+      // Закрытие модального окна с повторной проверкой
+      cy.get('.RuQycGaRTQNbnIEC5d3Y').click({ force: true });
+    cy.wait(1000); // Ждем 1 секунду, чтобы модальное окно закрылось
+    cy.get('.RuQycGaRTQNbnIEC5d3Y').should('not.exist', { timeout: 10000 });
   });
 });
