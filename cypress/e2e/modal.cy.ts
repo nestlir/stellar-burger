@@ -1,37 +1,33 @@
-describe('Кастомные команды', () => {
-  it('should open the order details modal and close it', () => {
-    // Перехват запроса к API, который загружает детали ингредиента
-    cy.intercept('GET', '**/643d69a5c3f7b9001cfa093c').as(
-      'fetchIngredientDetails'
-    );
+describe('Тесты на модальные окна с использованием cy.contains, закрытик по крестику и оверлей', () => {
+  beforeEach(() => {
+    cy.intercept('GET', 'api/ingredients', { fixture: 'ingredients.json' });
     // При условии, что приложение запущено
     cy.visit('http://localhost:4000');
-
-    // Открываем детали ингридиента
-    cy.openOrderDetails();
-
-    // Ожидаем изменения URL
-    cy.url().should('include', '/ingredients/');
-
-    // Закрываем модальное окно через кнопку
-    cy.get('[data-test-id="modal-close"]').click();
   });
-});
 
-it('should open the order details modal and close it', () => {
-  // Перехват запроса к API, который загружает детали ингредиента
-  cy.intercept('GET', '**/643d69a5c3f7b9001cfa0941').as(
-    'fetchIngredientDetails'
-  );
-  // При условии, что приложение запущено
-  cy.visit('http://localhost:4000');
+  it('Открытие и закрываем модальное окно через крестик', () => {
+    // Проверяем, что модальное окно отсутствует
+    cy.get('[data-test-id="modal"]').should('not.exist');
 
-  // Открываем детали ингридиента
-  cy.openOrderDetails();
+    // Открываем модальное окно ингредиента по его названию
+    cy.contains('Краторная булка N-200i').click();
 
-  // Ожидаем изменения URL
-  cy.url().should('include', '/ingredients/');
+    // Проверяем, что модальное окно открылось через текст внутри него
+    cy.contains('Краторная булка N-200i').should('be.visible');
 
-  // Закрываем модальное окно через клик на оверлей
-  cy.get('[data-test-id="modal-overlay"]').click({ force: true });
+    // Закрываем модальное окно через крестик
+    cy.get('[data-test-id="modal-close"]').click();
+    cy.get('.modal').should('not.exist');
+
+    // Проверяем, что модальное окно закрылось
+    cy.contains('Детали ингредиента').should('not.exist');
+  });
+
+  it(' Открываем модальное окно и закрываем через клик на оверлей', () => {
+    // Открываем модальное окно ингредиента по его названию
+    cy.contains('Биокотлета из марсианской Магнолии').click();
+
+    // Закрываем модальное окно через клик на оверлей
+    cy.get('[data-test-id="modal-overlay"]').click({ force: true });
+  });
 });
