@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "orders": [
+    {
+      "number": 12345,
+      "createdAt": "2024-08-24T10:00:00.000Z",
+      "updatedAt": "2024-08-24T10:05:00.000Z",
+      "name": "Space флюоресцентный бургер",
+      "status": "done",
+      "ingredients": [
+        "60d3b41abdacab0026a733c6",
+        "60d3b41abdacab0026a733c7"
+      ]
+    },
+    {
+      "number": 12346,
+      "createdAt": "2024-08-24T09:30:00.000Z",
+      "updatedAt": "2024-08-24T09:35:00.000Z",
+      "name": "Краторная булка N-200i",
+      "status": "in progress",
+      "ingredients": [
+        "60d3b41abdacab0026a733c6",
+        "60d3b41abdacab0026a733c7",
+        "60d3b41abdacab0026a733c8"
+      ]
+    }
+  ]
+}
